@@ -1,0 +1,339 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     10884,        330]
+NotebookOptionsPosition[      9610,        282]
+NotebookOutlinePosition[      9946,        297]
+CellTagsIndexPosition[      9903,        294]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Virtual Material", "Subsection",
+ CellChangeTimes->{{3.622223258499835*^9, 3.622223268474772*^9}}],
+
+Cell["\<\
+This notebook shows how to use the virtual material through Nascence API. It \
+is using the java wrapper that is suited to access the VM. There is also a \
+library that wraps all these in a mathematica functions.
+
+The VM is expected to be running at the given machine and port.\
+\>", "Text",
+ CellChangeTimes->{{3.622223269776669*^9, 3.6222233505325127`*^9}, {
+  3.6222251142903957`*^9, 3.622225139933127*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"vmHost", "=", "\"\<localhost\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vmPort", "=", "9090"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.622223351849883*^9, 3.622223366928597*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Java wrapper", "Subsection",
+ CellChangeTimes->{{3.622223323282317*^9, 3.622223326502578*^9}, {
+  3.622223373984549*^9, 3.622223382879573*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"vmPath", "=", "\"\<git/NASCENCE/vm\>\""}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vmJars", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{
+     RowBox[{"FileNames", "[", 
+      RowBox[{"vmPath", "<>", "\"\</dist/*\>\""}], "]"}], ",", 
+     RowBox[{"FileNames", "[", 
+      RowBox[{"vmPath", "<>", "\"\</lib/*\>\""}], "]"}]}], "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.622223531427229*^9, 3.622223579385215*^9}, {
+  3.6222239159614677`*^9, 3.622223916124701*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Needs", "[", "\"\<JLink`\>\"", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"javaBin", "=", "\"\</usr/lib/jvm/java-6-sun/bin/java\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"ReinstallJava", "[", 
+   RowBox[{"CommandLine", "=", "javaBin"}], "]"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"AddToClassPath", "/@", "vmJars"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.622223388454206*^9, 3.622223418428895*^9}, {
+   3.6222235036574163`*^9, 3.622223514494547*^9}, 3.622223683895996*^9, 
+   3.62222386177465*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vmClient", "=", 
+  RowBox[{"JavaNew", "[", 
+   RowBox[{
+   "\"\<nascence.vm.io.MathClient\>\"", ",", "vmHost", ",", "vmPort"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.622223697725622*^9, 3.6222237762399263`*^9}, {
+  3.6222239544023857`*^9, 3.622223956053886*^9}}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\[LeftGuillemet]", 
+   RowBox[{"JavaObject", "[", 
+    RowBox[{"nascence", ".", "vm", ".", "io", ".", "MathClient"}], "]"}], 
+   "\[RightGuillemet]"}],
+  JLink`Objects`vm6`JavaObject21495552969539585]], "Output",
+ CellChangeTimes->{
+  3.622223778897605*^9, 3.622223864822826*^9, {3.6222239485794086`*^9, 
+   3.622223956859046*^9}, 3.6222243104793797`*^9, 3.6222243575433407`*^9}]
+}, Open  ]],
+
+Cell[TextData[{
+ "Check who we are talking to (this is also test if the board / VM works). VM \
+outputs st. like ",
+ StyleBox["Virtual Material - Elman Recurrent Neural Network",
+  FontFamily->"Courier"],
+ ":"
+}], "Text",
+ CellChangeTimes->{{3.62222439110567*^9, 3.622224396249093*^9}, {
+  3.622224447022407*^9, 3.622224514914638*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vmClient", "@", 
+  RowBox[{"getMotherboardID", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.622224359396329*^9, 3.6222243896789494`*^9}, {
+  3.622224422824871*^9, 3.622224423033463*^9}}],
+
+Cell[BoxData["\<\"Virtual Material - Elman Recurrent Neural Network\"\>"], \
+"Output",
+ CellChangeTimes->{{3.622224399074139*^9, 3.622224423607499*^9}}]
+}, Open  ]],
+
+Cell["\<\
+Try a simple experiment with a VM generated at random (8 inputs, 32 hidden \
+nodes, 8 outputs, max weights of 5.0, 0.9 connection probability, no CW-RNN, \
+no recurrency (feedforward MLP only)):\
+\>", "Text",
+ CellChangeTimes->{{3.622224525390386*^9, 3.622224542284236*^9}, {
+  3.622224581047716*^9, 3.622224632564653*^9}}],
+
+Cell[BoxData[
+ RowBox[{"vmClient", "@", 
+  RowBox[{"programmeVarElmanRandom", "[", 
+   RowBox[{
+   "8", ",", "32", ",", "8", ",", "5.0", ",", " ", "0.9", ",", " ", "False", 
+    ",", " ", "False"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.622224521218917*^9, 3.622224522712212*^9}, {
+  3.6222245667486687`*^9, 3.622224577700596*^9}, {3.622224624802903*^9, 
+  3.622224650755525*^9}}],
+
+Cell["\<\
+Now test the material generating input data (list of input lists), let' s use \
+the last (7 th pin - VM uses 0 - based indexing) pin as the VM output and \
+evaluate the VM. The wrapper internally uses real numbers. One has to specify \
+the amplitude, which is multiplied by the data in order to server the VM \
+integer values via the nascence API. The output is, again, scaled by the \
+amplitude value. Setting up amplitude to 255 will make values between 0 and 1 \
+to have 255 distinct values. Here is the 10 input vectors of length 7.\
+\>", "Text",
+ CellChangeTimes->{{3.6222246591292963`*^9, 3.6222247729055357`*^9}, {
+  3.622224813771373*^9, 3.622224900002913*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "[", 
+  RowBox[{"Round", "[", 
+   RowBox[{
+    RowBox[{"data", "=", 
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"10", ",", "7"}], "}"}]}], "]"}]}], ",", "0.01"}], "]"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.622224739620101*^9, 3.62222474657415*^9}, {
+  3.6222248794111547`*^9, 3.622224958891797*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0.16`", "0.8300000000000001`", "0.73`", "0.42`", "0.74`", "0.12`", 
+      "0.21`"},
+     {"0.74`", "0.9500000000000001`", "0.8`", "0.03`", "0.05`", "0.51`", 
+      "0.91`"},
+     {"0.27`", "0.8200000000000001`", "0.24`", "0.96`", "0.8`", "0.18`", 
+      "0.63`"},
+     {"0.15`", "0.61`", "0.86`", "0.5`", "0.37`", "0.1`", "0.05`"},
+     {"0.11`", "0.23`", "0.2`", "0.12`", "0.33`", "0.84`", "0.45`"},
+     {"0.5`", "0.9500000000000001`", "0.26`", "0.77`", "0.8`", "0.14`", 
+      "0.66`"},
+     {"0.19`", "0.18`", "0.72`", "0.86`", "0.74`", "0.67`", "0.91`"},
+     {"0.32`", "0.21`", "0.13`", "0.98`", "0.56`", "0.9`", 
+      "0.8200000000000001`"},
+     {"0.7000000000000001`", "0.32`", "0.75`", "0.46`", "0.93`", "0.96`", 
+      "0.35000000000000003`"},
+     {"0.93`", "0.22`", "0.4`", "0.9500000000000001`", "0.36`", "0.53`", 
+      "0.73`"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.622224903113456*^9, 3.622224959348216*^9}}]
+}, Open  ]],
+
+Cell["Now specify the input pins :", "Text",
+ CellChangeTimes->{{3.6222249862313013`*^9, 3.622224991565241*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"inputPins", "=", 
+  RowBox[{"Range", "[", 
+   RowBox[{"0", ",", "6"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"amplitude", "=", "255"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.6222249694219723`*^9, 3.6222249834116707`*^9}, {
+  3.622225245737507*^9, 3.622225250036457*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "1", ",", "2", ",", "3", ",", "4", ",", "5", ",", "6"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.622224980378859*^9, 3.6222252504747066`*^9}]
+}, Open  ]],
+
+Cell["\<\
+and evaluate the VM, the result should be a 2D array again, that contains \
+vectors of length 1 only:\
+\>", "Text",
+ CellChangeTimes->{{3.622224994950323*^9, 3.622224999807485*^9}, {
+  3.622225202583794*^9, 3.622225228880887*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "[", 
+  RowBox[{"Round", "[", 
+   RowBox[{
+    RowBox[{"result", " ", "=", " ", 
+     RowBox[{"vmClient", "@", 
+      RowBox[{"evaluateArray", "[", 
+       RowBox[{"data", ",", " ", "amplitude", ",", "inputPins"}], "]"}]}]}], 
+    ",", "0.001"}], "]"}], "]"}]], "Input",
+ CellChangeTimes->{{3.622225171901538*^9, 3.622225196773302*^9}, {
+  3.62222523395092*^9, 3.622225330195805*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1.`"},
+     {"1.`"},
+     {"1.`"},
+     {"0.459`"},
+     {"0.871`"},
+     {"1.`"},
+     {"1.`"},
+     {"1.`"},
+     {"1.`"},
+     {"1.`"}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.62222529393742*^9, 3.622225333007246*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{740, 623},
+WindowMargins->{{Automatic, 58}, {42, Automatic}},
+FrontEndVersion->"9.0 for Linux x86 (64-bit) (February 7, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 104, 1, 44, "Subsection"],
+Cell[686, 25, 420, 8, 109, "Text"],
+Cell[1109, 35, 235, 6, 55, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1381, 46, 149, 2, 44, "Subsection"],
+Cell[1533, 50, 520, 14, 77, "Input"],
+Cell[2056, 66, 550, 13, 99, "Input"],
+Cell[CellGroupData[{
+Cell[2631, 83, 293, 7, 32, "Input"],
+Cell[2927, 92, 424, 9, 32, "Output"]
+}, Open  ]],
+Cell[3366, 104, 335, 8, 52, "Text"],
+Cell[CellGroupData[{
+Cell[3726, 116, 211, 4, 32, "Input"],
+Cell[3940, 122, 152, 2, 32, "Output"]
+}, Open  ]],
+Cell[4107, 127, 333, 6, 71, "Text"],
+Cell[4443, 135, 383, 8, 32, "Input"],
+Cell[4829, 145, 679, 10, 131, "Text"],
+Cell[CellGroupData[{
+Cell[5533, 159, 451, 13, 32, "Input"],
+Cell[5987, 174, 1470, 33, 186, "Output"]
+}, Open  ]],
+Cell[7472, 210, 112, 1, 30, "Text"],
+Cell[CellGroupData[{
+Cell[7609, 215, 312, 7, 55, "Input"],
+Cell[7924, 224, 192, 4, 32, "Output"]
+}, Open  ]],
+Cell[8131, 231, 240, 5, 51, "Text"],
+Cell[CellGroupData[{
+Cell[8396, 240, 421, 10, 77, "Input"],
+Cell[8820, 252, 762, 26, 186, "Output"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
