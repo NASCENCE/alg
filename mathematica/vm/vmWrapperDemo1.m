@@ -30,4 +30,7 @@ JavaNew["nascence.vm.io.MathClient",host,port]
 ]
 
 
+vmDisconnect[vmClient_]:=vmClient@closeConnection[]
+
+
 
