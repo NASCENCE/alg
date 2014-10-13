@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     10884,        330]
-NotebookOptionsPosition[      9610,        282]
-NotebookOutlinePosition[      9946,        297]
-CellTagsIndexPosition[      9903,        294]
+NotebookDataLength[     12251,        363]
+NotebookOptionsPosition[     10742,        307]
+NotebookOutlinePosition[     11110,        323]
+CellTagsIndexPosition[     11067,        320]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -25,13 +25,69 @@ Cell["Virtual Material", "Subsection",
 
 Cell["\<\
 This notebook shows how to use the virtual material through Nascence API. It \
-is using the java wrapper that is suited to access the VM. There is also a \
-library that wraps all these in a mathematica functions.
-
-The VM is expected to be running at the given machine and port.\
+is using the java wrapper that is suited to access the VM. \
 \>", "Text",
  CellChangeTimes->{{3.622223269776669*^9, 3.6222233505325127`*^9}, {
-  3.6222251142903957`*^9, 3.622225139933127*^9}}],
+  3.6222251142903957`*^9, 3.622225139933127*^9}, {3.6222259561014843`*^9, 
+  3.622225979950082*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Needs", "[", "\"\<JLink`\>\"", "]"}], ";"}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.622223388454206*^9, 3.622223418428895*^9}, {
+   3.6222235036574163`*^9, 3.622223514494547*^9}, 3.622223683895996*^9, 
+   3.62222386177465*^9, {3.622225860224255*^9, 3.62222586238139*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Java wrapper wrapper :)", "Subsection",
+ CellChangeTimes->{{3.622223323282317*^9, 3.622223326502578*^9}, {
+  3.622223373984549*^9, 3.622223382879573*^9}, {3.6222259190165243`*^9, 
+  3.622225923435885*^9}}],
+
+Cell["\<\
+The VM is expected to be running at the given machine and port. Path is the \
+path to the compiled VM classes.\
+\>", "Text",
+ CellChangeTimes->{{3.622225957661233*^9, 3.6222259694189863`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"vmConnect", "[", 
+   RowBox[{"host_", ",", "port_", ",", "path_"}], "]"}], ":=", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"vmJars", "=", 
+      RowBox[{"Join", "[", 
+       RowBox[{
+        RowBox[{"FileNames", "[", 
+         RowBox[{"path", "<>", "\"\</dist/*\>\""}], "]"}], ",", 
+        RowBox[{"FileNames", "[", 
+         RowBox[{"path", "<>", "\"\</lib/*\>\""}], "]"}]}], "]"}]}], "}"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"javaBin", "=", "\"\</usr/lib/jvm/java-6-sun/bin/java\>\""}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"ReinstallJava", "[", 
+      RowBox[{"CommandLine", "=", "javaBin"}], "]"}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"AddToClassPath", "/@", "vmJars"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"JavaNew", "[", 
+      RowBox[{"\"\<nascence.vm.io.MathClient\>\"", ",", "host", ",", "port"}],
+       "]"}]}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.622225436476192*^9, 3.6222254607770357`*^9}, {
+  3.622225510526217*^9, 3.622225554610209*^9}, {3.622225609976701*^9, 
+  3.6222256177608433`*^9}, {3.622225706564769*^9, 3.62222572321535*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Example usage", "Subsection",
+ CellChangeTimes->{{3.6222259059899673`*^9, 3.622225938643578*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -39,56 +95,24 @@ Cell[BoxData[{
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"vmPort", "=", "9090"}], ";"}]}], "Input",
- CellChangeTimes->{{3.622223351849883*^9, 3.622223366928597*^9}}]
-}, Open  ]],
+ CellChangeTimes->{{3.622223351849883*^9, 3.622223366928597*^9}}],
 
-Cell[CellGroupData[{
-
-Cell["Java wrapper", "Subsection",
- CellChangeTimes->{{3.622223323282317*^9, 3.622223326502578*^9}, {
-  3.622223373984549*^9, 3.622223382879573*^9}}],
-
-Cell[BoxData[{
+Cell[BoxData[
  RowBox[{
-  RowBox[{"vmPath", "=", "\"\<git/NASCENCE/vm\>\""}], 
-  ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"vmJars", "=", 
-   RowBox[{"Join", "[", 
-    RowBox[{
-     RowBox[{"FileNames", "[", 
-      RowBox[{"vmPath", "<>", "\"\</dist/*\>\""}], "]"}], ",", 
-     RowBox[{"FileNames", "[", 
-      RowBox[{"vmPath", "<>", "\"\</lib/*\>\""}], "]"}]}], "]"}]}], 
-  ";"}]}], "Input",
+  RowBox[{"vmPath", "=", "\"\<git/NASCENCE/vm\>\""}], ";"}]], "Input",
  CellChangeTimes->{{3.622223531427229*^9, 3.622223579385215*^9}, {
-  3.6222239159614677`*^9, 3.622223916124701*^9}}],
-
-Cell[BoxData[{
- RowBox[{
-  RowBox[{"Needs", "[", "\"\<JLink`\>\"", "]"}], ";"}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"javaBin", "=", "\"\</usr/lib/jvm/java-6-sun/bin/java\>\""}], 
-  ";"}], "\n", 
- RowBox[{
-  RowBox[{"ReinstallJava", "[", 
-   RowBox[{"CommandLine", "=", "javaBin"}], "]"}], ";"}], "\n", 
- RowBox[{
-  RowBox[{"AddToClassPath", "/@", "vmJars"}], ";"}]}], "Input",
- CellChangeTimes->{{3.622223388454206*^9, 3.622223418428895*^9}, {
-   3.6222235036574163`*^9, 3.622223514494547*^9}, 3.622223683895996*^9, 
-   3.62222386177465*^9}],
+  3.6222239159614677`*^9, 3.622223916124701*^9}, {3.6222258486475687`*^9, 
+  3.622225854120181*^9}}],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"vmClient", "=", 
-  RowBox[{"JavaNew", "[", 
-   RowBox[{
-   "\"\<nascence.vm.io.MathClient\>\"", ",", "vmHost", ",", "vmPort"}], 
-   "]"}]}]], "Input",
+  RowBox[{"vmConnect", "[", 
+   RowBox[{"vmHost", ",", "vmPort", ",", "vmPath"}], "]"}]}]], "Input",
  CellChangeTimes->{{3.622223697725622*^9, 3.6222237762399263`*^9}, {
-  3.6222239544023857`*^9, 3.622223956053886*^9}}],
+  3.6222239544023857`*^9, 3.622223956053886*^9}, {3.622225828136595*^9, 
+  3.6222258440684443`*^9}}],
 
 Cell[BoxData[
  InterpretationBox[
@@ -122,7 +146,8 @@ Cell[BoxData[
 
 Cell[BoxData["\<\"Virtual Material - Elman Recurrent Neural Network\"\>"], \
 "Output",
- CellChangeTimes->{{3.622224399074139*^9, 3.622224423607499*^9}}]
+ CellChangeTimes->{{3.622224399074139*^9, 3.622224423607499*^9}, {
+  3.622225795519724*^9, 3.622225804876567*^9}}]
 }, Open  ]],
 
 Cell["\<\
@@ -280,8 +305,9 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{740, 623},
-WindowMargins->{{Automatic, 58}, {42, Automatic}},
+AutoGeneratedPackage->Automatic,
+WindowSize->{1024, 768},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
 FrontEndVersion->"9.0 for Linux x86 (64-bit) (February 7, 2013)",
 StyleDefinitions->"Default.nb"
 ]
@@ -298,38 +324,45 @@ CellTagsIndex->{}
 Notebook[{
 Cell[CellGroupData[{
 Cell[579, 22, 104, 1, 44, "Subsection"],
-Cell[686, 25, 420, 8, 109, "Text"],
-Cell[1109, 35, 235, 6, 55, "Input"]
+Cell[686, 25, 332, 6, 31, "Text"],
+Cell[1021, 33, 326, 6, 32, "Input",
+ InitializationCell->True]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[1381, 46, 149, 2, 44, "Subsection"],
-Cell[1533, 50, 520, 14, 77, "Input"],
-Cell[2056, 66, 550, 13, 99, "Input"],
-Cell[CellGroupData[{
-Cell[2631, 83, 293, 7, 32, "Input"],
-Cell[2927, 92, 424, 9, 32, "Output"]
+Cell[1384, 44, 211, 3, 44, "Subsection"],
+Cell[1598, 49, 202, 4, 31, "Text"],
+Cell[1803, 55, 1225, 28, 165, "Input",
+ InitializationCell->True]
 }, Open  ]],
-Cell[3366, 104, 335, 8, 52, "Text"],
 Cell[CellGroupData[{
-Cell[3726, 116, 211, 4, 32, "Input"],
-Cell[3940, 122, 152, 2, 32, "Output"]
+Cell[3065, 88, 103, 1, 44, "Subsection"],
+Cell[3171, 91, 235, 6, 55, "Input"],
+Cell[3409, 99, 262, 5, 32, "Input"],
+Cell[CellGroupData[{
+Cell[3696, 108, 311, 6, 32, "Input"],
+Cell[4010, 116, 424, 9, 32, "Output"]
 }, Open  ]],
-Cell[4107, 127, 333, 6, 71, "Text"],
-Cell[4443, 135, 383, 8, 32, "Input"],
-Cell[4829, 145, 679, 10, 131, "Text"],
+Cell[4449, 128, 335, 8, 53, "Text"],
 Cell[CellGroupData[{
-Cell[5533, 159, 451, 13, 32, "Input"],
-Cell[5987, 174, 1470, 33, 186, "Output"]
+Cell[4809, 140, 211, 4, 32, "Input"],
+Cell[5023, 146, 201, 3, 32, "Output"]
 }, Open  ]],
-Cell[7472, 210, 112, 1, 30, "Text"],
+Cell[5239, 152, 333, 6, 51, "Text"],
+Cell[5575, 160, 383, 8, 32, "Input"],
+Cell[5961, 170, 679, 10, 91, "Text"],
 Cell[CellGroupData[{
-Cell[7609, 215, 312, 7, 55, "Input"],
-Cell[7924, 224, 192, 4, 32, "Output"]
+Cell[6665, 184, 451, 13, 32, "Input"],
+Cell[7119, 199, 1470, 33, 186, "Output"]
 }, Open  ]],
-Cell[8131, 231, 240, 5, 51, "Text"],
+Cell[8604, 235, 112, 1, 30, "Text"],
 Cell[CellGroupData[{
-Cell[8396, 240, 421, 10, 77, "Input"],
-Cell[8820, 252, 762, 26, 186, "Output"]
+Cell[8741, 240, 312, 7, 55, "Input"],
+Cell[9056, 249, 192, 4, 32, "Output"]
+}, Open  ]],
+Cell[9263, 256, 240, 5, 31, "Text"],
+Cell[CellGroupData[{
+Cell[9528, 265, 421, 10, 32, "Input"],
+Cell[9952, 277, 762, 26, 186, "Output"]
 }, Open  ]]
 }, Open  ]]
 }
