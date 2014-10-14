@@ -22,8 +22,7 @@
 Needs["JLink`"];
 
 
-vmConnect[host_,port_,path_]:=Module[{vmJars=Join[FileNames[path<>"/dist/*"],FileNames[path<>"/lib/*"]]},
-javaBin="/usr/lib/jvm/java-6-sun/bin/java";
+vmConnect[host_,port_,path_]:=Module[{vmJars=Join[FileNames[path<>"/dist/*"],FileNames[path<>"/lib/*"]],javaBin="/usr/lib/jvm/java-6-sun/bin/java"},
 ReinstallJava[CommandLine=javaBin];
 AddToClassPath/@vmJars;
 JavaNew["nascence.vm.io.MathClient",host,port]
