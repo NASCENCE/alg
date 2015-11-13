@@ -160,6 +160,7 @@ while True:
       errs[i] += (results[n] - t) ** 2
       n += 1
 
+  print(results, t)
   print >>log, "errs:", errs
 
   #Evolve
