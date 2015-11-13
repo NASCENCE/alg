@@ -94,7 +94,8 @@ def evaluate(setups):
   #  print(res[Ts-1::Ts])
   return res[Ts-1::Ts]
 
-def display(ind, prob, target):
+def display(ind, prob, target, save=None):
+  plt.clf()
   samples = []
   RES = 5
 
@@ -107,7 +108,10 @@ def display(ind, prob, target):
   plt.imshow(data, cmap="gray")
   plt.plot([p[0] for p, t in zip(prob, target) if t >= 0.0], [p[1] for p, t in zip(prob, target) if t >= 0.0], "bx", [p[0] for p, t in zip(prob, target) if t < 0.0], [p[1] for p, t in zip(prob, target) if t < 0.0], "ro")
   #plt.plot([p[0] for p, t in zip(prob, target) if t >= 0.0], [p[1] for p, t in zip(prob, target) if t >= 0.0], "kx")
-  plt.show()
+  if save:
+    plt.savefig(save)
+  else:
+    plt.show()
 
 
 # tests = []
@@ -115,17 +119,19 @@ def display(ind, prob, target):
 #   tests.append([np.random.randint(255), np.random.randint(255), np.random.randint(255), np.random.randint(255)])
 # evaluate(tests)
 # evaluate(tests)
+
+TARGET_VOLT = .1 #Determines what voltage is the target
 problem = [np.array([.4, .4])]
-target = [.5]
+target = [TARGET_VOLT]
 
 
 POP, GEN = 10, 6
 
 pop = np.random.uniform(size=(POP, GEN))
-display(pop[0], problem, target)
-display(pop[1], problem, target)
+#display(pop[0], problem, target, "test.pdf")
+#display(pop[1], problem, target)
 
-mix = mixer.Mixer(noise = .06, shuffle_prob = .1)
+mix = mixer.Mixer(noise = .03, shuffle_prob = .1)
 
 epoch = 0
 counter = 0
@@ -148,6 +154,9 @@ while True:
   for i, ind in enumerate(pop):
     for t in target:
       print(results[n], t)
+
+      #errs[i] += (results[n] - t) ** 2
+      errs[i] += 1.0 if ((results[n] > 0.0) ^ (t > 0.0)) else 0.0
       errs[i] += (results[n] - t) ** 2
       n += 1
 
@@ -160,7 +169,8 @@ while True:
   min_err = np.min(errs) / len(problem)
   best_ind = pop[np.argmin(errs)]
 
-  if min_err < .01 and counter > 10:
+  if min_err < .1 and counter > 10:
+    display(best_ind, problem, target, "best_%s.pdf" % epoch)
     counter = 0
     new_prob = np.random.uniform(size=2)
     x = np.append(best_ind.copy(), new_prob)
@@ -168,9 +178,9 @@ while True:
 
     problem.append(new_prob)
     if guess > 0.0:
-      target.append(-.5)
+      target.append(-TARGET_VOLT)
     else:
-      target.append(.5)
+      target.append(TARGET_VOLT)
     print >>log, "added problem", problem, target
 
   elif counter > 30:
@@ -182,9 +192,9 @@ while True:
 
     problem[-1] = new_prob
     if guess > 0.0:
-      target[-1] = -.5
+      target[-1] = -TARGET_VOLT
     else:
-      target[-1] = .5
+      target[-1] = TARGET_VOLT
     print >>log, "changed problem", problem, target
 
   print("errs [min] [mean] [ind]:", np.min(errs), np.mean(errs), np.argmin(errs))
