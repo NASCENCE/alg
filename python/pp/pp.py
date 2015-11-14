@@ -48,14 +48,14 @@ def evaluate(setups):
 
   it = [emSequenceItem() for i in range(8)]
 
-  it[0].pin = [0]
-  it[1].pin = [7]
-  it[2].pin = [3]
-  it[3].pin = [5]
-  it[4].pin = [6]
-  it[5].pin = [4]
-  it[6].pin = [1]
-  it[7].pin = [2]
+  it[0].pin = [13]
+  it[1].pin = [9]
+  it[2].pin = [5]
+  it[3].pin = [8]
+  it[4].pin = [7]
+  it[5].pin = [14]
+  it[6].pin = [6]
+  it[7].pin = [12]
 
   out = emSequenceItem()
   out.pin = [0]
@@ -75,6 +75,7 @@ def evaluate(setups):
     t += T
 
   #Now we know when to stop recording
+
   out.startTime = 0
   out.endTime = t
 
@@ -106,6 +107,7 @@ def display(ind, prob, target, save=None):
   data = data.reshape(RES, RES)
   print("showing")
   plt.imshow(data, cmap="gray")
+  plt.axis([0, 1, 0, 1])
   plt.plot([p[0] for p, t in zip(prob, target) if t >= 0.0], [p[1] for p, t in zip(prob, target) if t >= 0.0], "bx", [p[0] for p, t in zip(prob, target) if t < 0.0], [p[1] for p, t in zip(prob, target) if t < 0.0], "ro")
   #plt.plot([p[0] for p, t in zip(prob, target) if t >= 0.0], [p[1] for p, t in zip(prob, target) if t >= 0.0], "kx")
   if save:
