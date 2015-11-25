@@ -8,14 +8,14 @@ class Mixer:
         self.noise = noise
         self.shuffle_prob = shuffle_prob
 
-    def mix(self, genomes, fitnesses, reverse=False):
+    def mix(self, genomes, fitnesses, cost=False):
         N, G = genomes.shape[0], genomes.shape[1]
         N_NEW = 0
         N_CLONE = N - N_NEW
 
 
         ranking = np.argsort(fitnesses)
-        if not reverse: #normal is higher fitness = better, unless reversed
+        if not cost: #normal is higher fitness = better, unless reversed
             ranking = ranking[::-1]
 
         #create selection mat

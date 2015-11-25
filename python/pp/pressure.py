@@ -6,10 +6,10 @@ plt.ion()
 
 
 N_SAMPLES = 4
-N_PROBLEMS = 10
+N_PROBLEMS = 5
 PROBLEM_GEN = 2 * N_SAMPLES
 
-N_IND = 10
+N_IND = 5
 IND_GEN = 2*5 + 5 + 5*1
 
 #mutation_distribution = mutation_distribution
@@ -103,8 +103,8 @@ class NN:
 
 problems = mutation_distribution(size=(N_PROBLEMS, PROBLEM_GEN))
 inds = mutation_distribution(size=(N_IND, IND_GEN))
-
 errs = np.zeros((N_PROBLEMS, N_IND))
+
 problem_fitness = np.zeros(N_PROBLEMS)
 ind_fitness = np.zeros(N_IND)
 
@@ -127,13 +127,13 @@ while True:
 
     #Calculate problem fitness
     for ip, prob in enumerate(problems):
-        #problem_fitness[ip] = np.max(errs[ip, :]) - np.min(errs[ip, :])
+        #problem_fitness[ip] = np.max(errs[ip, :]) - np.min(errs[ip, :]) - .01 * np.sum(prob ** 2)
         #problem_fitness[ip] = np.std(errs[ip, :]) - .01 * np.sum(prob ** 2)
         problem_fitness[ip] = np.sum(errs[ip, :] ** 2) - .01 * np.sum(prob ** 2)
 
     #Calculate solver fitness
     for ii, ind in enumerate(inds):
-        ind_fitness[ii] = np.mean(errs[:, ii]) + .005 * np.sum(ind ** 2)
+        ind_fitness[ii] = np.mean(errs[:, ii]) + .05 * np.sum(ind ** 2)
 
     #Who are the best?
     best_prob, best_ind = np.argmax(problem_fitness), np.argmin(ind_fitness)
