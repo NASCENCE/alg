@@ -131,14 +131,16 @@ def evaluate(setups):
 def display(ind, prob, target, save=None):
   plt.clf()
   samples = []
-  RES = 5
+  RES = 25
 
   for y in np.linspace(1, 0., RES):
     for x in np.linspace(0, 1., RES):
       samples.append(np.append(ind.copy(), [x, y]))
   data = evaluate(samples)
   data = data.reshape(RES, RES)
-  plt.matshow(data, cmap="hot", interpolation='bilinear')
+  #data = np.random.normal(size=(RES, RES))
+  plt.imshow(data, cmap="hot", interpolation='bilinear')
+  plt.gca().set_autoscale_on(False)
   plt.plot([p[0] * (RES-1) for p, t in zip(prob, target) if t >= MEAN_VOLT], [p[1] * (RES-1) for p, t in zip(prob, target) if t >= MEAN_VOLT], "bx", [p[0] * (RES-1) for p, t in zip(prob, target) if t < MEAN_VOLT], [p[1] * (RES-1) for p, t in zip(prob, target) if t < MEAN_VOLT], "ro")
   #plt.plot([p[0] for p, t in zip(prob, target) if t >= 0.0], [p[1] for p, t in zip(prob, target) if t >= 0.0], "kx")
   #plt.axis([0, RES, 0, RES])
@@ -162,6 +164,10 @@ POP, GEN = 20, 6
 
 pop = np.random.uniform(size=(POP, GEN))
 display(pop[0], problem, target, "test1.pdf")
+display(pop[0], problem, target, "test2.pdf")
+display(pop[0], problem, target, "test3.pdf")
+exit(1)
+
 mix = mixer.Mixer(noise = .03, shuffle_prob = .1)
 
 solved = []

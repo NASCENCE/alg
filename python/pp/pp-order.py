@@ -26,7 +26,7 @@ import mixer
 
 now = datetime.datetime.now()
 timestr = "%s-%s+%s:%s" % (now.month, now.day, now.hour, now.minute)
-log = open("pp-log-" + timestr + ".log", "w+")
+log = open("pp-order-" + timestr + ".log", "w+")
 
 #this is the transport used for thrift, it can be a socket or memory or ... other things
 transport = TSocket.TSocket('129.241.103.191', 9090)
@@ -125,7 +125,11 @@ def evaluate(setups):
   #plt.show()
 
   #  print(res[Ts-1::Ts])
-  return res[Ts-1::Ts]
+  res = res[Ts-1::Ts]
+  print len(res), len(setups)
+  if len(res) != len(setups):
+    return evaluate(setups)
+  return res
 
 def display(ind, prob, target, save=None):
   plt.clf()
@@ -156,7 +160,7 @@ def display(ind, prob, target, save=None):
 # evaluate(tests)
 
 TARGET_VOLT = .01 #Determines what voltage is the target
-MEAN_VOLT = -0.23
+MEAN_VOLT = -0.485
 
 BUDGET = 1
 
@@ -209,7 +213,7 @@ while True:
             sample_set.append(x)
 
         results = evaluate(sample_set)
-
+        print("results", results[:5])
         n = 0
         errs = np.zeros(POP)
 
@@ -225,15 +229,12 @@ while True:
         print >>log, "errs:", errs
 
         #Evolve
-        mix.mix(pop, errs, cost=True)
-        pop = np.clip(pop, 0., 1.) #volages need to be supplied in positive range?
-
         min_err = np.min(errs) / len(problem)
         best_ind = pop[np.argmin(errs)]
 
         if min_err < .1:
           filename = "solved_i%s_b%s_p%s.pdf" % (iteration, bits, problem_id)
-          solutions.append((time.time() - global_start_time, epoch, iteration, bits, problem_id))
+          solutions.append((time.time() - global_start_time, epoch, iteration, bits, problem_id, problem, target))
 
 
           if bits == 2:
@@ -241,6 +242,10 @@ while True:
           print >>log, "Problem solved, best ind, prob, target:", best_ind, problem, target
           print >>log, "See", filename
           print >>log, "solutions", solutions
+          break
+
+        mix.mix(pop, errs, cost=True)
+        pop = np.clip(pop, 0., 1.) #volages need to be supplied in positive range?
 
         print("errs [min] [mean] [ind]:", np.min(errs), np.mean(errs), np.argmin(errs))
         print >>log, "errs [min] [mean] [ind]:", np.min(errs), np.mean(errs), np.argmin(errs)
