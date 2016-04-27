@@ -26,7 +26,7 @@ import mixer
 
 now = datetime.datetime.now()
 timestr = "%s-%s+%s:%s" % (now.month, now.day, now.hour, now.minute)
-log = open("pp-" + timestr + ".log", "w+")
+log = open(timestr + ".log", "w+")
 
 #this is the transport used for thrift, it can be a socket or memory or ... other things
 transport = TSocket.TSocket('129.241.103.191', 9090)
@@ -53,9 +53,9 @@ cli.clearSequences()
 #time is in milliseconds, amplitude is -5 to 5V scaled to between 0 and 255.
 
 random_pins = np.arange(16)
-#np.random.shuffle(random_pins)
+np.random.shuffle(random_pins)
 
-random_pins = [5, 3, 6, 13, 10, 8, 11, 1, 14]
+#random_pins = [5, 3, 6, 13, 10, 8, 11, 1, 14]
 
 print >>log, "PINS: output, input..", random_pins
 
@@ -119,9 +119,7 @@ def evaluate(setups):
   #so we just rescale it to 'real' volts here.
   samples = np.array(cli.getRecording(record_pin).Samples)
   res = samples * (1.0/4096.0)
-  print (len(samples))
-  if len(samples) < len(setups): #failed, try again until heap fills...
-    return evaluate(setups)
+
   #plt.plot(res)
   #plt.show()
 
@@ -131,16 +129,16 @@ def evaluate(setups):
 def display(ind, prob, target, save=None):
   plt.clf()
   samples = []
-  RES = 25
+  RES = 5
 
   for y in np.linspace(1, 0., RES):
     for x in np.linspace(0, 1., RES):
       samples.append(np.append(ind.copy(), [x, y]))
   data = evaluate(samples)
   data = data.reshape(RES, RES)
-  #data = np.random.normal(size=(RES, RES))
-  plt.imshow(data, cmap="hot", interpolation='bilinear')
-  plt.gca().set_autoscale_on(False)
+  print(data)
+  print("showing")
+  plt.matshow(data, cmap="hot", interpolation='bilinear')
   plt.plot([p[0] * (RES-1) for p, t in zip(prob, target) if t >= MEAN_VOLT], [p[1] * (RES-1) for p, t in zip(prob, target) if t >= MEAN_VOLT], "bx", [p[0] * (RES-1) for p, t in zip(prob, target) if t < MEAN_VOLT], [p[1] * (RES-1) for p, t in zip(prob, target) if t < MEAN_VOLT], "ro")
   #plt.plot([p[0] for p, t in zip(prob, target) if t >= 0.0], [p[1] for p, t in zip(prob, target) if t >= 0.0], "kx")
   #plt.axis([0, RES, 0, RES])
@@ -156,31 +154,30 @@ def display(ind, prob, target, save=None):
 # evaluate(tests)
 
 TARGET_VOLT = .01 #Determines what voltage is the target
-MEAN_VOLT = -0.485
+MEAN_VOLT = -0.23
 problem = [np.array([.4, .4])]
 target = [TARGET_VOLT + MEAN_VOLT]
+
 
 POP, GEN = 20, 6
 
 pop = np.random.uniform(size=(POP, GEN))
 display(pop[0], problem, target, "test1.pdf")
-display(pop[0], problem, target, "test2.pdf")
-display(pop[0], problem, target, "test3.pdf")
-exit(1)
+display(pop[1], problem, target, "test2.pdf")
+display(pop[2], problem, target, "test3.pdf")
+display(pop[3], problem, target, "test4.pdf")
+display(pop[4], problem, target, "test5.pdf")
+display(pop[5], problem, target, "test6.pdf")
 
 mix = mixer.Mixer(noise = .03, shuffle_prob = .1)
 
 solved = []
-add_times = []
 global_time_start = time.time()
 
 epoch = 0
 counter = 0
 
 n_solved = 0
-
-start_budget = 10
-budget = start_budget
 
 while True:
   print >>log, "===================="
@@ -194,33 +191,30 @@ while True:
       sample_set.append(x)
 
   results = evaluate(sample_set)
-  print "res ", results[:5]
+
   n = 0
   errs = np.zeros(POP)
-  if len(results) != len(sample_set): #board failed, try again
-    continue
 
   for i, ind in enumerate(pop):
     for t in target:
       #errs[i] += (results[n] - t) ** 2
-      print(len(sample_set), len(results), n, i, len(errs))
       errs[i] += 1.0 if ((results[n] > MEAN_VOLT) ^ (t > MEAN_VOLT)) else 0.0
       errs[i] += (results[n] - t) ** 2
       n += 1
 
-  # print(results, target)
+  print(results, target)
   print >>log, "errs:", errs
 
   #Evolve
-  mix.mix(pop, errs, cost=True)
+  mix.mix(pop, errs, reverse=True)
   pop = np.clip(pop, 0., 1.) #volages need to be supplied in positive range?
 
   min_err = np.min(errs) / len(problem)
   best_ind = pop[np.argmin(errs)]
 
-  if min_err < .1:
+  if min_err < .1 and counter > 10:
     n_solved += 1
-    solved.append((global_time_start, n_solved, epoch, problem, target, add_times))
+    solved.append((global_time_start, n_solved, epoch))
     print("solved", solved)
     print >>log, "solved", solved
     display(best_ind, problem, target, "best_%s.pdf" % epoch)
@@ -234,11 +228,9 @@ while True:
       target.append(MEAN_VOLT - TARGET_VOLT)
     else:
       target.append(MEAN_VOLT + TARGET_VOLT)
-    add_times.append(epoch)
     print >>log, "added problem", problem, target
-    budget = start_budget
 
-  elif counter > budget:
+  elif counter > 30:
     counter = 0
     new_prob = np.random.uniform(size=2)
     x = np.append(best_ind.copy(), new_prob)
@@ -250,7 +242,6 @@ while True:
     else:
       target[-1] = MEAN_VOLT + TARGET_VOLT
     print >>log, "changed problem", problem, target
-    budget *= 1.1
 
   print("errs [min] [mean] [ind]:", np.min(errs), np.mean(errs), np.argmin(errs))
   print("best ind: ", pop[np.argmin(errs)])
